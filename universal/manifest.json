@@ -1,0 +1,606 @@
+{
+  "schema_version": "1.0",
+  "project": "novel-skill-cards",
+  "version": "1.1.0",
+  "updated_at": "2026-10-28",
+  "language": "zh-CN",
+  "counts": {
+    "controllers": 2,
+    "function_cards": 29,
+    "total_cards": 31
+  },
+  "conventions": {
+    "input_placeholder": "{{变量}}",
+    "evidence_statuses": [
+      "正文事实",
+      "大纲计划",
+      "候选设定"
+    ],
+    "issue_levels": {
+      "P0": "阻断问题",
+      "P1": "必须返修问题",
+      "P2": "可选优化"
+    },
+    "audit_levels": [
+      "硬错误",
+      "结构问题",
+      "表达问题",
+      "可选优化"
+    ],
+    "permissions": {
+      "read_only": "只读，不修改正文或设定",
+      "orchestrate": "只调度卡片，不直接修改正文或设定",
+      "update_plan": "可更新计划，不得改写正文事实",
+      "update_canon_with_evidence": "有证据才可更新设定，核心冲突需确认",
+      "update_character_state_with_evidence": "有正文证据才可更新人物状态",
+      "update_tracking_with_evidence": "有正文证据才可更新追踪记录",
+      "update_state_with_evidence": "仅依据实际正文回写状态",
+      "revise_draft": "可定向修订草稿，必须保留原稿并回归复检"
+    }
+  },
+  "suites": [
+    {
+      "id": "ai-auto-writing",
+      "title": "通用技能卡｜AI 自动写作版",
+      "file": "universal/ai-auto-writing-cards.zh-CN.md",
+      "controller": "A00",
+      "cards": [
+        {
+          "id": "A00",
+          "name": "自动写作总控卡",
+          "required_inputs": [
+            "{{用户要求}}"
+          ],
+          "optional_inputs": [
+            "{{作品正文}}",
+            "{{作品设定}}",
+            "{{人物档案}}",
+            "{{故事大纲}}",
+            "{{前章摘要}}"
+          ],
+          "output_kind": "workflow_decision",
+          "dependencies": [],
+          "permission": "orchestrate",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "A01",
+          "name": "写作任务解析卡",
+          "required_inputs": [
+            "{{用户要求}}"
+          ],
+          "optional_inputs": [
+            "{{目标平台}}",
+            "{{目标篇幅}}",
+            "{{文风参考}}",
+            "{{创作禁区}}"
+          ],
+          "output_kind": "task_brief",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "A02",
+          "name": "作品圣经管理卡",
+          "required_inputs": [
+            "{{用户要求}}"
+          ],
+          "optional_inputs": [
+            "{{作品正文}}",
+            "{{作品设定}}",
+            "{{故事大纲}}"
+          ],
+          "output_kind": "canon_document",
+          "dependencies": [],
+          "permission": "update_canon_with_evidence",
+          "related_specialist_skills": [
+            "worldbuilding-bible"
+          ]
+        },
+        {
+          "id": "A03",
+          "name": "人物模型与声纹卡",
+          "required_inputs": [
+            "{{人物档案}}"
+          ],
+          "optional_inputs": [
+            "{{作品正文}}",
+            "{{用户要求}}"
+          ],
+          "output_kind": "character_profiles",
+          "dependencies": [],
+          "permission": "update_character_state_with_evidence",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "A04",
+          "name": "长篇结构与分卷规划卡",
+          "required_inputs": [
+            "{{用户要求}}",
+            "{{作品设定}}",
+            "{{人物档案}}"
+          ],
+          "optional_inputs": [
+            "{{目标篇幅}}",
+            "{{结局要求}}"
+          ],
+          "output_kind": "longform_plan",
+          "dependencies": [
+            "A01",
+            "A02",
+            "A03"
+          ],
+          "permission": "update_plan",
+          "related_specialist_skills": [
+            "outline-architect"
+          ]
+        },
+        {
+          "id": "A05",
+          "name": "章节任务与场景规划卡",
+          "required_inputs": [
+            "{{故事大纲}}",
+            "{{前章摘要}}"
+          ],
+          "optional_inputs": [
+            "{{人物档案}}",
+            "{{伏笔台账}}",
+            "{{目标字数}}",
+            "{{下一章约束}}"
+          ],
+          "output_kind": "chapter_task",
+          "dependencies": [
+            "A04"
+          ],
+          "permission": "update_plan",
+          "related_specialist_skills": [
+            "outline-architect",
+            "chapter-hook-crafter"
+          ]
+        },
+        {
+          "id": "A06",
+          "name": "上下文装配与记忆压缩卡",
+          "required_inputs": [
+            "{{章节任务卡}}",
+            "{{前章摘要}}"
+          ],
+          "optional_inputs": [
+            "{{作品设定}}",
+            "{{人物档案}}",
+            "{{近期正文}}",
+            "{{伏笔台账}}"
+          ],
+          "output_kind": "context_package",
+          "dependencies": [
+            "A05"
+          ],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "A07",
+          "name": "写前可行性校验卡",
+          "required_inputs": [
+            "{{章节任务卡}}"
+          ],
+          "optional_inputs": [
+            "{{作品正文}}",
+            "{{人物状态}}",
+            "{{时间线}}",
+            "{{空间位置}}",
+            "{{物品记录}}"
+          ],
+          "output_kind": "preflight_decision",
+          "dependencies": [
+            "A05"
+          ],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "A08",
+          "name": "伏笔与信息差管理卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{故事大纲}}",
+            "{{前章摘要}}",
+            "{{人物知情记录}}",
+            "{{计划回收位置}}"
+          ],
+          "output_kind": "foreshadowing_ledger",
+          "dependencies": [],
+          "permission": "update_tracking_with_evidence",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "A09",
+          "name": "时间线、空间与物品追踪卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{前章摘要}}",
+            "{{人物行程}}",
+            "{{人物状态}}",
+            "{{物品清单}}"
+          ],
+          "output_kind": "continuity_state",
+          "dependencies": [],
+          "permission": "update_tracking_with_evidence",
+          "related_specialist_skills": [
+            "novel-consistency-checker"
+          ]
+        },
+        {
+          "id": "A10",
+          "name": "章节摘要与状态回写卡",
+          "required_inputs": [
+            "{{本章正文}}",
+            "{{章节任务卡}}",
+            "{{写前状态}}"
+          ],
+          "optional_inputs": [],
+          "output_kind": "state_patch",
+          "dependencies": [
+            "A05"
+          ],
+          "permission": "update_state_with_evidence",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "A11",
+          "name": "文风与视角偏移检测卡",
+          "required_inputs": [
+            "{{本章正文}}"
+          ],
+          "optional_inputs": [
+            "{{风格规范}}",
+            "{{人物声纹}}",
+            "{{视角规则}}",
+            "{{参考章节}}"
+          ],
+          "output_kind": "style_pov_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": [
+            "style-fingerprint"
+          ]
+        },
+        {
+          "id": "A12",
+          "name": "自动质量门禁卡",
+          "required_inputs": [
+            "{{本章正文}}",
+            "{{章节任务卡}}"
+          ],
+          "optional_inputs": [
+            "{{专项检查结果}}",
+            "{{前一章正文}}",
+            "{{后一章约束}}"
+          ],
+          "output_kind": "quality_gate",
+          "dependencies": [
+            "A10",
+            "A11"
+          ],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "A13",
+          "name": "定向修订与回归复检卡",
+          "required_inputs": [
+            "{{原正文}}",
+            "{{返修任务}}"
+          ],
+          "optional_inputs": [
+            "{{不可变更事项}}",
+            "{{作品设定}}",
+            "{{前后章约束}}"
+          ],
+          "output_kind": "revised_text_and_regression",
+          "dependencies": [
+            "A12"
+          ],
+          "permission": "revise_draft",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "A14",
+          "name": "事实、合规与原创风险检查卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{故事年代地域}}",
+            "{{目标平台}}",
+            "{{专业领域}}",
+            "{{最新公开资料}}"
+          ],
+          "output_kind": "risk_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        }
+      ]
+    },
+    {
+      "id": "human-writing-audit",
+      "title": "通用技能卡｜人工写作检查核对版",
+      "file": "universal/human-writing-audit-cards.zh-CN.md",
+      "controller": "B00",
+      "cards": [
+        {
+          "id": "B00",
+          "name": "稿件核对总控卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{用户要求}}",
+            "{{作品设定}}",
+            "{{故事大纲}}",
+            "{{人物档案}}"
+          ],
+          "output_kind": "audit_report",
+          "dependencies": [],
+          "permission": "orchestrate",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "B01",
+          "name": "文本完整性核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{章节目录}}",
+            "{{旧版正文}}"
+          ],
+          "output_kind": "text_integrity_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "B02",
+          "name": "世界观与设定一致性核对卡",
+          "required_inputs": [
+            "{{作品正文}}",
+            "{{作品设定}}"
+          ],
+          "optional_inputs": [
+            "{{相关旧章节}}"
+          ],
+          "output_kind": "canon_conflict_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": [
+            "novel-consistency-checker"
+          ]
+        },
+        {
+          "id": "B03",
+          "name": "人物动机与行为核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{人物档案}}",
+            "{{前序关键经历}}"
+          ],
+          "output_kind": "motivation_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "B04",
+          "name": "人物关系与声纹核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{人物关系设定}}",
+            "{{人物语言样本}}"
+          ],
+          "output_kind": "relationship_voice_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "B05",
+          "name": "剧情因果与逻辑核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{故事大纲}}",
+            "{{前后章节}}"
+          ],
+          "output_kind": "causality_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "B06",
+          "name": "时间线与空间核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{时间记录}}",
+            "{{地理与行程设定}}"
+          ],
+          "output_kind": "time_space_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": [
+            "novel-consistency-checker"
+          ]
+        },
+        {
+          "id": "B07",
+          "name": "人物状态与物品核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{人物状态记录}}",
+            "{{物品清单}}"
+          ],
+          "output_kind": "state_item_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": [
+            "novel-consistency-checker"
+          ]
+        },
+        {
+          "id": "B08",
+          "name": "伏笔与知情范围核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{伏笔清单}}",
+            "{{故事大纲}}",
+            "{{人物知情记录}}"
+          ],
+          "output_kind": "foreshadowing_knowledge_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": [
+            "novel-consistency-checker"
+          ]
+        },
+        {
+          "id": "B09",
+          "name": "章节功能与节奏核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{章节任务}}",
+            "{{故事大纲}}"
+          ],
+          "output_kind": "chapter_pacing_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": [
+            "webnovel-pace-analyzer"
+          ]
+        },
+        {
+          "id": "B10",
+          "name": "视角与叙述一致性核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{人称与视角规范}}"
+          ],
+          "output_kind": "pov_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "B11",
+          "name": "对话与场景可读性核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{人物位置}}",
+            "{{人物关系设定}}"
+          ],
+          "output_kind": "dialogue_scene_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "B12",
+          "name": "重复冗余与表达核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{需保留的风格特征}}"
+          ],
+          "output_kind": "language_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": [
+            "deai-rewrite"
+          ]
+        },
+        {
+          "id": "B13",
+          "name": "事实与专业细节核验卡",
+          "required_inputs": [
+            "{{相关段落}}",
+            "{{故事年代地域}}"
+          ],
+          "optional_inputs": [
+            "{{可靠外部资料}}"
+          ],
+          "output_kind": "fact_check_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        },
+        {
+          "id": "B14",
+          "name": "开篇与作品包装核对卡",
+          "required_inputs": [
+            "{{书名}}",
+            "{{简介}}",
+            "{{开篇正文}}"
+          ],
+          "optional_inputs": [
+            "{{标签}}",
+            "{{目标读者}}",
+            "{{目标平台}}"
+          ],
+          "output_kind": "opening_package_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": [
+            "opening-crafter",
+            "book-packager"
+          ]
+        },
+        {
+          "id": "B15",
+          "name": "合规与原创风险核对卡",
+          "required_inputs": [
+            "{{作品正文}}"
+          ],
+          "optional_inputs": [
+            "{{目标平台}}",
+            "{{最新平台规则}}",
+            "{{合法取得的对照材料}}"
+          ],
+          "output_kind": "compliance_originality_report",
+          "dependencies": [],
+          "permission": "read_only",
+          "related_specialist_skills": []
+        }
+      ]
+    }
+  ],
+  "integration": {
+    "routing": "universal/routing.md",
+    "examples": "universal/examples.md",
+    "evaluation": "universal/evaluation.md",
+    "changelog": "CHANGELOG.md"
+  }
+}
